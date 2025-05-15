@@ -5,20 +5,50 @@ import os
 import textwrap
 
 basePath = '../../Data'
+humanEvalBasePath = '..\..\..\..\Part 1\PythonCodeMetricsCalculator\Data'
 # List of CSV file paths (update with your actual file paths)
-def getCsvFile(choice):
+def getCsvFile(choice, all = False):
     if choice == 1:
-        return [
-            'code_llama_simple_prompt_radon.csv',
-            'code_llama_instructional_tone_prompt_radon.csv',
-            'code_llama_enhanced_prompt_radon.csv'
-        ]
+        if not all:
+            return [
+                'code_llama_simple_prompt_radon.csv',
+                'code_llama_instructional_tone_prompt_radon.csv',
+                'code_llama_enhanced_prompt_radon.csv'
+            ]
+        else:
+            return [
+                'human_eval_radon.csv',
+                'gpt_3.5_turbo_simple_prompt_radon.csv',
+                'gpt_3.5_turbo_instruction_tone_prompt_radon.csv',
+                'gpt_3.5_turbo_enhanced_prompt_radon.csv',
+                'gpt_4_simple_prompt_radon.csv',
+                'gpt_4_instruction_tone_prompt_radon.csv',
+                'gpt_4_enhanced_prompt_radon.csv',
+                'code_llama_simple_prompt_radon.csv',
+                'code_llama_instructional_tone_prompt_radon.csv',
+                'code_llama_enhanced_prompt_radon.csv'
+            ]
+
     elif choice == 2:
-        return [
-            'code_llama_simple_prompt_complexipy.csv',
-            'code_llama_instructional_tone_prompt_complexipy.csv',
-            'code_llama_enhanced_prompt_complexipy.csv'
-        ]
+        if not all:
+            return [
+                'code_llama_simple_prompt_complexipy.csv',
+                'code_llama_instructional_tone_prompt_complexipy.csv',
+                'code_llama_enhanced_prompt_complexipy.csv'
+            ]
+        else:
+            return [
+                'human_eval_complexipy.csv',
+                'gpt_3.5_turbo_simple_prompt_complexipy.csv',
+                'gpt_3.5_turbo_instruction_tone_prompt_complexipy.csv',
+                'gpt_3.5_turbo_enhanced_prompt_complexipy.csv',
+                'gpt_4_simple_prompt_complexipy.csv',
+                'gpt_4_instruction_tone_prompt_complexipy.csv',
+                'gpt_4_enhanced_prompt_complexipy.csv',
+                'code_llama_simple_prompt_complexipy.csv',
+                'code_llama_instructional_tone_prompt_complexipy.csv',
+                'code_llama_enhanced_prompt_complexipy.csv'
+            ]
     elif choice == 3:
         return [
             'code_llama_simple_prompt_pylint.csv',
@@ -37,42 +67,77 @@ def getCsvFile(choice):
             'code_llama_instructional_tone_prompt_bandit.csv',
             'code_llama_enhanced_prompt_bandit.csv'
         ]
+############ Directories and Labels for Other Tasks ####################
+# directories = [
+#     'CodeLlama_Simple_Prompt',
+#     'CodeLlama_Instructional_Tone_Prompt',
+#     'CodeLlama_Enhanced_Prompt'
+# ]
+# labels = [
+#     'CodeLlama S',
+#     'CodeLlama I',
+#     'CodeLlama E'
+# ]
+############ End ####################
 
+############ Directories and Labels for Box Plots####################
 directories = [
+    'Human_Eval_Dataset',
+    'GPT_3.5_Turbo_Simple_Prompt',
+    'GPT_3.5_Turbo_Instruction_Tone_Prompt',
+    'GPT_3.5_Turbo_Enhanced_Prompt',
+    'GPT_4_Simple_Prompt',
+    'GPT_4_Instruction_Tone_Prompt',
+    'GPT_4_Enhanced_Prompt',
     'CodeLlama_Simple_Prompt',
     'CodeLlama_Instructional_Tone_Prompt',
     'CodeLlama_Enhanced_Prompt'
 ]
 labels = [
+    'HE',
+    'GPT 3.5 S',
+    'GPT 3.5 I',
+    'GPT 3.5 E',
+    'GPT 4 S',
+    'GPT 4 I',
+    'GPT 4 E',
     'CodeLlama S',
     'CodeLlama I',
     'CodeLlama E'
 ]
+############ End ####################
+
 #################### Box Plots ####################
 #################### Tools: Radon, Complexipy ####################
 
 # List to store the volume data for each CSV
-# data = []
-# j = 0
-# title = "LOC"
-# # Loop through the CSVs and extract the Volume
-# csv_files = getCsvFile(1)
-# for file in csv_files:
-#     df = pd.read_csv(os.path.join(basePath, directories[j], 'CSV_Reports', file))
-#     j += 1
-#     data.append(df[title].values)  # Store the Volume values
-#
-# # Create a box plot using matplotlib
-# wrapped_labels = [textwrap.fill(label, width=5) for label in labels]  # Adjust width as needed
-#
-# plt.figure(figsize=(10, 6))
-# plt.boxplot(data, vert=True)  # Vertical box plot
-# plt.ylabel(title, fontsize=20)
-# plt.xticks(range(1, len(csv_files) + 1), wrapped_labels, fontsize=20)
-# plt.yticks(fontsize=18)
-# plt.grid(axis='y')  # Optional: add horizontal grid lines for better readability
-# plt.tight_layout()
-# plt.show()
+data = []
+j = 0
+title = "Complexity"
+# Loop through the CSVs and extract the Volume
+csv_files = getCsvFile(2, True)
+for file in csv_files:
+    path = None
+    splitString = file.split('_')
+    if splitString[0] == "code" :   #CodeLlama File Path
+        path = basePath
+    elif splitString[0] == 'human' or splitString[0] == 'gpt':
+        path = humanEvalBasePath
+    df = pd.read_csv(os.path.join(path, directories[j], 'CSV_Reports', file))
+    j += 1
+    data.append(df[title].values)  # Store the Volume values
+
+# Create a box plot using matplotlib
+wrapped_labels = [textwrap.fill(label, width=5) for label in labels]  # Adjust width as needed
+
+plt.figure(figsize=(15,8))
+plt.boxplot(data, vert=True)  # Vertical box plot
+plt.ylabel('Cognitive ' + title, fontsize=15)
+plt.xticks(range(1, len(csv_files) + 1), wrapped_labels, fontsize=15)
+plt.yticks(fontsize=18)
+plt.grid(axis='y')  # Optional: add horizontal grid lines for better readability
+plt.tight_layout()
+plt.show()
 #################### Box Plots Ends ####################
 
 #################### Bar Charts ####################
@@ -104,88 +169,88 @@ frequencyObject = {}
 
 
 #test case
-types = ['passed','runtime error','assertion error']
-csv_files = getCsvFile(4)
-def getTestCaseFrequency(label,df):
-    if label not in frequencyObject:
-        frequencyObject[label] = {
-            'passed':0,
-            'runtime error':0,
-            'assertion error':0
-        }
-
-    for i in range (len(df)):
-        if df.loc[i,'Test Case Passed'] == True:
-            frequencyObject[label]['passed'] += 1
-        elif df.loc[i,'Test Case Passed'] == False and df.loc[i,'Error Type'] == "Assertion Error":
-            frequencyObject[label]['assertion error'] += 1
-        else:
-            frequencyObject[label]['runtime error'] += 1
-
-j = 0
-for file in csv_files:
-    df = pd.read_csv(os.path.join(basePath, directories[j], 'CSV_Reports', file))
-    getTestCaseFrequency(labels[j], df)
-    j += 1
-
-
-# # For Pylint and Test Case
-def plot_frequency(frequencyObject):
-    # Get dataset labels and types (convention, warning, error)
-    labels = list(frequencyObject.keys())
-    types = list(next(iter(frequencyObject.values())).keys())
-
-    # Extract counts for each type across all datasets
-    type_counts = {t: [frequencyObject[label][t] for label in labels] for t in types}
-
-    x = np.arange(len(labels))  # Label locations (datasets)
-    width = 0.2  # Width of the bars
-
-    # Create figure and axis with larger dimensions
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    # Plot bars for each type (convention, warning, error)
-    bars_list = []
-    for i, t in enumerate(types):
-        bars = ax.bar(x + i * width, type_counts[t], width, label=t)
-        bars_list.append(bars)
-
-    # Add labels, title, and x-axis ticks
-    ax.set_ylabel('Frequency')
-
-    # Ensure x-tick labels don't overlap and set proper alignment
-    ax.set_xticks(x + width / 2)
-    ax.set_xticklabels(labels,rotation = 90, ha="right")  # Rotate for better readability
-
-    # Move the legend outside the plot
-    ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
-
-    # Add labels on top of the bars
-    def add_labels(bars):
-        for bar in bars:
-            height = bar.get_height()
-            # Calculate a dynamic offset based on the bar height
-            offset = 0.02 * height  # 2% of the height as an offset
-            ax.annotate(f'{height}',
-                        xy=(bar.get_x() + bar.get_width() / 2, height),
-                        xytext=(0, offset),  # Use dynamic offset
-                        textcoords="offset points",
-                        ha='center', va='bottom')
-
-    # Add labels for each group of bars
-    for bars in bars_list:
-        add_labels(bars)
-
-    # Adjust the y-axis limit to allow for the height of the labels
-    max_count = max([max(counts) for counts in type_counts.values()])  # Find the maximum height
-    ax.set_ylim(0, max_count * 1.15)  # Extend y-limit to avoid clipping labels (15% above max)
-
-    # Adjust the layout to prevent clipping of tick-labels and ensure legend fits
-    plt.tight_layout(rect=[0, 0, 0.85, 1])  # Adjusting right margin for legend space
-    plt.show()
-
-# Call the function with your frequencyObject
-plot_frequency(frequencyObject)
+# types = ['passed','runtime error','assertion error']
+# csv_files = getCsvFile(4)
+# def getTestCaseFrequency(label,df):
+#     if label not in frequencyObject:
+#         frequencyObject[label] = {
+#             'passed':0,
+#             'runtime error':0,
+#             'assertion error':0
+#         }
+#
+#     for i in range (len(df)):
+#         if df.loc[i,'Test Case Passed'] == True:
+#             frequencyObject[label]['passed'] += 1
+#         elif df.loc[i,'Test Case Passed'] == False and df.loc[i,'Error Type'] == "Assertion Error":
+#             frequencyObject[label]['assertion error'] += 1
+#         else:
+#             frequencyObject[label]['runtime error'] += 1
+#
+# j = 0
+# for file in csv_files:
+#     df = pd.read_csv(os.path.join(basePath, directories[j], 'CSV_Reports', file))
+#     getTestCaseFrequency(labels[j], df)
+#     j += 1
+#
+#
+# # # For Pylint and Test Case
+# def plot_frequency(frequencyObject):
+#     # Get dataset labels and types (convention, warning, error)
+#     labels = list(frequencyObject.keys())
+#     types = list(next(iter(frequencyObject.values())).keys())
+#
+#     # Extract counts for each type across all datasets
+#     type_counts = {t: [frequencyObject[label][t] for label in labels] for t in types}
+#
+#     x = np.arange(len(labels))  # Label locations (datasets)
+#     width = 0.2  # Width of the bars
+#
+#     # Create figure and axis with larger dimensions
+#     fig, ax = plt.subplots(figsize=(12, 6))
+#
+#     # Plot bars for each type (convention, warning, error)
+#     bars_list = []
+#     for i, t in enumerate(types):
+#         bars = ax.bar(x + i * width, type_counts[t], width, label=t)
+#         bars_list.append(bars)
+#
+#     # Add labels, title, and x-axis ticks
+#     ax.set_ylabel('Frequency')
+#
+#     # Ensure x-tick labels don't overlap and set proper alignment
+#     ax.set_xticks(x + width / 2)
+#     ax.set_xticklabels(labels,rotation = 90, ha="right")  # Rotate for better readability
+#
+#     # Move the legend outside the plot
+#     ax.legend(loc='upper left', bbox_to_anchor=(1, 1))
+#
+#     # Add labels on top of the bars
+#     def add_labels(bars):
+#         for bar in bars:
+#             height = bar.get_height()
+#             # Calculate a dynamic offset based on the bar height
+#             offset = 0.02 * height  # 2% of the height as an offset
+#             ax.annotate(f'{height}',
+#                         xy=(bar.get_x() + bar.get_width() / 2, height),
+#                         xytext=(0, offset),  # Use dynamic offset
+#                         textcoords="offset points",
+#                         ha='center', va='bottom')
+#
+#     # Add labels for each group of bars
+#     for bars in bars_list:
+#         add_labels(bars)
+#
+#     # Adjust the y-axis limit to allow for the height of the labels
+#     max_count = max([max(counts) for counts in type_counts.values()])  # Find the maximum height
+#     ax.set_ylim(0, max_count * 1.15)  # Extend y-limit to avoid clipping labels (15% above max)
+#
+#     # Adjust the layout to prevent clipping of tick-labels and ensure legend fits
+#     plt.tight_layout(rect=[0, 0, 0.85, 1])  # Adjusting right margin for legend space
+#     plt.show()
+#
+# # Call the function with your frequencyObject
+# plot_frequency(frequencyObject)
 
 #################### Bar Charts End ####################
 
@@ -217,14 +282,15 @@ plot_frequency(frequencyObject)
 #################### Single Bar Chart Ends ####################
 
 #################### Comparison Analysis with Human Eval ####################
-
-# humanEvalRadon = pd.read_csv(os.path.join(basePath, "Human_Eval_Dataset", 'CSV_Reports', 'human_eval_radon.csv'))
-# humanEvalComplexipy = pd.read_csv(os.path.join(basePath, "Human_Eval_Dataset", 'CSV_Reports', 'human_eval_complexipy.csv'))
+# humanEvalBasePath = '..\..\..\..\Part 1\PythonCodeMetricsCalculator\Data'
 #
-# targetRadon = pd.read_csv(os.path.join(basePath, directories[6], 'CSV_Reports', 'gpt_4_enhanced_prompt_radon.csv'))
-# targetComplexipy = pd.read_csv(os.path.join(basePath, directories[6], 'CSV_Reports', 'gpt_4_enhanced_prompt_complexipy.csv'))
+# humanEvalRadon = pd.read_csv(os.path.join(humanEvalBasePath, "Human_Eval_Dataset", 'CSV_Reports', 'human_eval_radon.csv'))
+# humanEvalComplexipy = pd.read_csv(os.path.join(humanEvalBasePath, "Human_Eval_Dataset", 'CSV_Reports', 'human_eval_complexipy.csv'))
 #
-# targetTestCaseCheck = pd.read_csv(os.path.join(basePath, directories[6], 'CSV_Reports', 'gpt_4_enhanced_prompt_test_case_check.csv'))
+# targetRadon = pd.read_csv(os.path.join(basePath, directories[2], 'CSV_Reports', 'code_llama_enhanced_prompt_radon.csv'))
+# targetComplexipy = pd.read_csv(os.path.join(basePath, directories[2], 'CSV_Reports', 'code_llama_enhanced_prompt_complexipy.csv'))
+#
+# targetTestCaseCheck = pd.read_csv(os.path.join(basePath, directories[2], 'CSV_Reports', 'code_llama_enhanced_prompt_test_case_check.csv'))
 #
 # targetRadon.set_index('File Name', inplace = True)
 # targetComplexipy.set_index('File', inplace = True)

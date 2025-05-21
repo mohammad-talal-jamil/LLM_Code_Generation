@@ -111,7 +111,7 @@ File Name,Test Case Passed,Error Type
 24,FALSE,Assertion Error
 76,FALSE,Assertion Error
 80,TRUE,
-9,TRUE,
+9,FALSE,name 'List' is not defined
 69,FALSE,Assertion Error
 25,TRUE,
 112,FALSE,Assertion Error

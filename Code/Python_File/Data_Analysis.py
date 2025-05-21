@@ -3,10 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import textwrap
+from scipy.stats import wilcoxon
+from tabulate import tabulate
 
 basePath = '../../Data'
 humanEvalBasePath = '..\..\..\..\Part 1\PythonCodeMetricsCalculator\Data'
-# List of CSV file paths (update with your actual file paths)
+# # List of CSV file paths (update with your actual file paths)
 def getCsvFile(choice, all = False):
     if choice == 1:
         if not all:
@@ -81,26 +83,27 @@ def getCsvFile(choice, all = False):
 ############ End ####################
 
 ############ Directories and Labels for Box Plots####################
+
 directories = [
-    'Human_Eval_Dataset',
-    'GPT_3.5_Turbo_Simple_Prompt',
-    'GPT_3.5_Turbo_Instruction_Tone_Prompt',
-    'GPT_3.5_Turbo_Enhanced_Prompt',
-    'GPT_4_Simple_Prompt',
-    'GPT_4_Instruction_Tone_Prompt',
-    'GPT_4_Enhanced_Prompt',
+    # 'Human_Eval_Dataset',
+    # 'GPT_3.5_Turbo_Simple_Prompt',
+    # 'GPT_3.5_Turbo_Instruction_Tone_Prompt',
+    # 'GPT_3.5_Turbo_Enhanced_Prompt',
+    # 'GPT_4_Simple_Prompt',
+    # 'GPT_4_Instruction_Tone_Prompt',
+    # 'GPT_4_Enhanced_Prompt',
     'CodeLlama_Simple_Prompt',
     'CodeLlama_Instructional_Tone_Prompt',
     'CodeLlama_Enhanced_Prompt'
 ]
 labels = [
-    'HE',
-    'GPT 3.5 S',
-    'GPT 3.5 I',
-    'GPT 3.5 E',
-    'GPT 4 S',
-    'GPT 4 I',
-    'GPT 4 E',
+    # 'HE',
+    # 'GPT 3.5 S',
+    # 'GPT 3.5 I',
+    # 'GPT 3.5 E',
+    # 'GPT 4 S',
+    # 'GPT 4 I',
+    # 'GPT 4 E',
     'CodeLlama S',
     'CodeLlama I',
     'CodeLlama E'
@@ -111,33 +114,33 @@ labels = [
 #################### Tools: Radon, Complexipy ####################
 
 # List to store the volume data for each CSV
-data = []
-j = 0
-title = "Complexity"
-# Loop through the CSVs and extract the Volume
-csv_files = getCsvFile(2, True)
-for file in csv_files:
-    path = None
-    splitString = file.split('_')
-    if splitString[0] == "code" :   #CodeLlama File Path
-        path = basePath
-    elif splitString[0] == 'human' or splitString[0] == 'gpt':
-        path = humanEvalBasePath
-    df = pd.read_csv(os.path.join(path, directories[j], 'CSV_Reports', file))
-    j += 1
-    data.append(df[title].values)  # Store the Volume values
-
-# Create a box plot using matplotlib
-wrapped_labels = [textwrap.fill(label, width=5) for label in labels]  # Adjust width as needed
-
-plt.figure(figsize=(15,8))
-plt.boxplot(data, vert=True)  # Vertical box plot
-plt.ylabel('Cognitive ' + title, fontsize=15)
-plt.xticks(range(1, len(csv_files) + 1), wrapped_labels, fontsize=15)
-plt.yticks(fontsize=18)
-plt.grid(axis='y')  # Optional: add horizontal grid lines for better readability
-plt.tight_layout()
-plt.show()
+# data = []
+# j = 0
+# title = "Maintainability Index"
+# # Loop through the CSVs and extract the Volume
+# csv_files = getCsvFile(1, True)
+# for file in csv_files:
+#     path = None
+#     splitString = file.split('_')
+#     if splitString[0] == "code" :   #CodeLlama File Path
+#         path = basePath
+#     elif splitString[0] == 'human' or splitString[0] == 'gpt':
+#         path = humanEvalBasePath
+#     df = pd.read_csv(os.path.join(path, directories[j], 'CSV_Reports', file))
+#     j += 1
+#     data.append(df[title].values)  # Store the Volume values
+#
+# # Create a box plot using matplotlib
+# wrapped_labels = [textwrap.fill(label, width=5) for label in labels]  # Adjust width as needed
+#
+# plt.figure(figsize=(15,8))
+# plt.boxplot(data, vert=True)  # Vertical box plot
+# plt.ylabel(title, fontsize=15)
+# plt.xticks(range(1, len(csv_files) + 1), wrapped_labels, fontsize=15)
+# plt.yticks(fontsize=18)
+# plt.grid(axis='y')  # Optional: add horizontal grid lines for better readability
+# plt.tight_layout()
+# plt.show()
 #################### Box Plots Ends ####################
 
 #################### Bar Charts ####################
@@ -194,7 +197,7 @@ frequencyObject = {}
 #     j += 1
 #
 #
-# # # For Pylint and Test Case
+# # # # For Pylint and Test Case
 # def plot_frequency(frequencyObject):
 #     # Get dataset labels and types (convention, warning, error)
 #     labels = list(frequencyObject.keys())
@@ -251,7 +254,7 @@ frequencyObject = {}
 #
 # # Call the function with your frequencyObject
 # plot_frequency(frequencyObject)
-
+#
 #################### Bar Charts End ####################
 
 #################### Single Bar Chart ####################
@@ -282,55 +285,110 @@ frequencyObject = {}
 #################### Single Bar Chart Ends ####################
 
 #################### Comparison Analysis with Human Eval ####################
-# humanEvalBasePath = '..\..\..\..\Part 1\PythonCodeMetricsCalculator\Data'
-#
-# humanEvalRadon = pd.read_csv(os.path.join(humanEvalBasePath, "Human_Eval_Dataset", 'CSV_Reports', 'human_eval_radon.csv'))
-# humanEvalComplexipy = pd.read_csv(os.path.join(humanEvalBasePath, "Human_Eval_Dataset", 'CSV_Reports', 'human_eval_complexipy.csv'))
-#
-# targetRadon = pd.read_csv(os.path.join(basePath, directories[2], 'CSV_Reports', 'code_llama_enhanced_prompt_radon.csv'))
-# targetComplexipy = pd.read_csv(os.path.join(basePath, directories[2], 'CSV_Reports', 'code_llama_enhanced_prompt_complexipy.csv'))
-#
-# targetTestCaseCheck = pd.read_csv(os.path.join(basePath, directories[2], 'CSV_Reports', 'code_llama_enhanced_prompt_test_case_check.csv'))
-#
-# targetRadon.set_index('File Name', inplace = True)
-# targetComplexipy.set_index('File', inplace = True)
-# targetTestCaseCheck.set_index('File Name', inplace = True)
-#
-# humanEvalRadon.set_index('File Name', inplace = True)
-# humanEvalComplexipy.set_index('File', inplace = True)
-#
-# print(targetTestCaseCheck)
-#
-# loc = CC = cogC = vocab = MI = testCase = 0
-# for i in range (len(targetTestCaseCheck)):
-#     if targetTestCaseCheck.loc[i]['Test Case Passed']:
-#         testCase += 1
-#         index = str(i) + '.py'
-#
-#         if not (targetRadon.loc[index]['LOC'] < humanEvalRadon.loc[index]['LOC']):
-#             loc += 1
-#         if not (targetRadon.loc[index]['Cyclomatic Complexity'] < humanEvalRadon.loc[index]['Cyclomatic Complexity']):
-#             CC += 1
-#         if not (targetRadon.loc[index]['Vocabulary'] < humanEvalRadon.loc[index]['Vocabulary']):
-#             vocab += 1
-#         if not (targetRadon.loc[index]['Maintainability Index'] > humanEvalRadon.loc[index]['Maintainability Index']):
-#             MI += 1
-#         temp = humanEvalComplexipy.loc[index]['Complexity']
-#         if isinstance(temp, pd.Series) and len(temp) > 1:
-#             temp = temp.sum()
-#
-#         target_complexity = targetComplexipy.loc[index]['Complexity']
-#
-#         if isinstance(target_complexity, pd.Series) and len(target_complexity) > 1:
-#             target_complexity = target_complexity.sum()
-#         if not target_complexity < temp:
-#             cogC += 1
-#
-# print("Test Case " ,testCase)
-# print("LOC ", (loc/164) * 100)
-# print("CC ",(CC/164) * 100)
-# print("Vocab", (vocab/164) * 100)
-# print("MI ", (MI/164) * 100)
-# print("CogC ", (cogC/164) * 100)
+humanEvalBasePath = '..\..\..\..\Part 1\PythonCodeMetricsCalculator\Data'
+
+humanEvalRadon = pd.read_csv(os.path.join(humanEvalBasePath, "Human_Eval_Dataset", 'CSV_Reports', 'human_eval_radon.csv'))
+humanEvalComplexipy = pd.read_csv(os.path.join(humanEvalBasePath, "Human_Eval_Dataset", 'CSV_Reports', 'human_eval_complexipy.csv'))
+
+targetRadon = pd.read_csv(os.path.join(basePath, directories[1], 'CSV_Reports', 'code_llama_instructional_tone_prompt_radon.csv'))
+targetComplexipy = pd.read_csv(os.path.join(basePath, directories[1], 'CSV_Reports', 'code_llama_instructional_tone_prompt_complexipy.csv'))
+
+targetTestCaseCheck = pd.read_csv(os.path.join(basePath, directories[1], 'CSV_Reports', 'code_llama_instructional_tone_prompt_test_case_check.csv'))
+
+targetRadon.set_index('File Name', inplace = True)
+targetComplexipy.set_index('File', inplace = True)
+targetTestCaseCheck.set_index('File Name', inplace = True)
+
+humanEvalRadon.set_index('File Name', inplace = True)
+humanEvalComplexipy.set_index('File', inplace = True)
+
+print(targetTestCaseCheck)
+
+loc = CC = cogC = vocab = MI = testCase = 0
+for i in range (len(targetTestCaseCheck)):
+    if targetTestCaseCheck.loc[i]['Test Case Passed']:
+        testCase += 1
+        index = str(i) + '.py'
+
+        if not (targetRadon.loc[index]['LOC'] < humanEvalRadon.loc[index]['LOC']):
+            loc += 1
+        if not (targetRadon.loc[index]['Cyclomatic Complexity'] < humanEvalRadon.loc[index]['Cyclomatic Complexity']):
+            CC += 1
+        if not (targetRadon.loc[index]['Vocabulary'] < humanEvalRadon.loc[index]['Vocabulary']):
+            vocab += 1
+        if not (targetRadon.loc[index]['Maintainability Index'] > humanEvalRadon.loc[index]['Maintainability Index']):
+            MI += 1
+        temp = humanEvalComplexipy.loc[index]['Complexity']
+        if isinstance(temp, pd.Series) and len(temp) > 1:
+            temp = temp.sum()
+
+        target_complexity = targetComplexipy.loc[index]['Complexity']
+
+        if isinstance(target_complexity, pd.Series) and len(target_complexity) > 1:
+            target_complexity = target_complexity.sum()
+        if not target_complexity < temp:
+            cogC += 1
+
+print("Test Case " ,testCase)
+print("LOC ", (loc/164) * 100)
+print("CC ",(CC/164) * 100)
+print("Vocab", (vocab/164) * 100)
+print("MI ", (MI/164) * 100)
+print("CogC ", (cogC/164) * 100)
 
 #################### Comparison Analysis with Huaman Eval Ends ####################
+
+################### Wilcoxon Signed Rank Testing #################################
+# title = 'Complexity'
+# mainDf = pd.DataFrame()
+# csv_files = getCsvFile(2, True)
+# j = 0
+# for file in csv_files:
+#     path = None
+#     splitString = file.split('_')
+#     if splitString[0] == "code":   #CodeLlama File Path
+#         path = basePath
+#     elif splitString[0] == 'human' or splitString[0] == 'gpt':
+#         path = humanEvalBasePath
+#     df = pd.read_csv(os.path.join(path, directories[j], 'CSV_Reports', file))
+#     # Group by 'File Name' and sum all other columns
+#     df = df.sort_values(by='File', ascending=True)
+#     df = df.groupby("File", as_index=False).sum()
+#     j += 1
+#     if(splitString[0] == 'human'):
+#         mainDf['Human_Eval'] = df[title].values
+#     elif (splitString[0] == 'gpt' and splitString[1] == '3.5' and splitString[3] == 'simple'):
+#         mainDf['GPT_3.5_S'] = df[title].values
+#     elif (splitString[0] == 'gpt' and splitString[1] == '3.5' and splitString[3] == 'instruction'):
+#         mainDf['GPT_3.5_I'] = df[title].values
+#     elif (splitString[0] == 'gpt' and splitString[1] == '3.5' and splitString[3] == 'enhanced'):
+#         mainDf['GPT_3.5_E'] = df[title].values
+#     elif (splitString[0] == 'gpt' and splitString[1] == '4' and splitString[2] == 'simple'):
+#         mainDf['GPT_4_S'] = df[title].values
+#     elif (splitString[0] == 'gpt' and splitString[1] == '4' and splitString[2] == 'instruction'):
+#         mainDf['GPT_4_I'] = df[title].values
+#     elif (splitString[0] == 'gpt' and splitString[1] == '4' and splitString[2] == 'enhanced'):
+#         mainDf['GPT_4_E'] = df[title].values
+#     elif (splitString[0] == 'code' and splitString[1] == 'llama' and splitString[2] == 'simple'):
+#         mainDf['CodeLlama_S'] = df[title].values
+#     elif (splitString[0] == 'code' and splitString[1] == 'llama' and splitString[2] == 'instructional'):
+#         mainDf['CodeLlama_I'] = df[title].values
+#     elif (splitString[0] == 'code' and splitString[1] == 'llama' and splitString[2] == 'enhanced'):
+#         mainDf['CodeLlama_E'] = df[title].values
+#
+#
+# # Perform Wilcoxon signed-rank test
+# human_eval = mainDf["Human_Eval"]
+# print(human_eval)
+# results = []
+#
+# for col in mainDf.columns:
+#     if col not in ["File Name", "Human_Eval"]:
+#         print(col)
+#         print(mainDf[col])
+#         stat, p = wilcoxon(human_eval, mainDf[col])
+#         results.append({"Comparison": f"HumanEval vs {col}", "t-value": stat, "p-value": p})
+#
+# results_df = pd.DataFrame(results)
+#
+# print(results_df.to_csv(sep='\t', index=False))
